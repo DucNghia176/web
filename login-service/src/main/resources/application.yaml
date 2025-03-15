@@ -1,0 +1,18 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@192.168.55.2:1521/ORCL21PDB1
+    username: MYUSER
+    password: ${DB_PASSWORD:12345}  # Dùng biến môi trường, mặc định là 12345
+    driver-class-name: oracle.jdbc.OracleDriver
+
+  jpa:
+    database-platform: org.hibernate.dialect.OracleDialect
+    hibernate:
+      ddl-auto: update  # Có thể đổi thành validate nếu không muốn tự động sửa DB
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true  # Hiển thị SQL rõ ràng hơn trong log
