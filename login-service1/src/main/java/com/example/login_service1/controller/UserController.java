@@ -1,14 +1,15 @@
 package com.example.login_service1.controller;
 
 import com.example.login_service1.dto.request.UserRequest;
+import com.example.login_service1.dto.response.ErrorResponse;
 import com.example.login_service1.entity.User;
 import com.example.login_service1.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/users")
@@ -18,12 +19,30 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/create")
-    public ResponseEntity<User> createUser(@RequestBody UserRequest request) { // CHỈ DÙNG @RequestBody
+    public ResponseEntity<Object> createUser(@RequestBody UserRequest request) {
         try {
             System.out.println("Received request: " + request); // Log request để debug
+
+            // Kiểm tra nếu username rỗng
             if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
-                return ResponseEntity.badRequest().body(null);
+                return ResponseEntity.badRequest().body(new ErrorResponse("Username is required", "Username cannot be empty"));
             }
+
+            // Kiểm tra định dạng email
+            if (!isValidEmail(request.getEmail())) {
+                return ResponseEntity.badRequest().body(new ErrorResponse("Invalid email format", "Please provide a valid email address"));
+            }
+
+            // Kiểm tra email đã tồn tại trong database
+            if (userService.isEmailExist(request.getEmail())) {
+                return ResponseEntity.badRequest().body(new ErrorResponse("Email already exists", "The email address is already in use"));
+            }
+
+            // Kiểm tra tên đã tồn tại chưa
+            if (userService.isNameExist(request.getName())) {
+                return ResponseEntity.badRequest().body(new ErrorResponse("Name already exists", "The name is already in use"));
+            }
+
             // Chuyển từ request thành entity
             User user = User.builder()
                     .username(request.getUsername())
@@ -37,9 +56,19 @@ public class UserController {
             // Lưu user vào DB
             User newUser = userService.createUser(user);
             return ResponseEntity.ok(newUser);
+
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.status(500).body(new ErrorResponse("Internal Server Error", "An unexpected error occurred"));
         }
+    }
+
+
+    // Phương thức kiểm tra định dạng email hợp lệ
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 
 }
