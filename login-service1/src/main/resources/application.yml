@@ -1,18 +1,19 @@
 server:
   port: 8080
-
 spring:
   datasource:
     url: jdbc:oracle:thin:@192.168.55.2:1521/ORCL21PDB1
     username: MYUSER
-    password: ${DB_PASSWORD:12345}  # Dùng bi?n môi tr??ng, m?c ??nh là 12345
+    password: ${DB_PASSWORD:12345}  # Dï¿½ng bi?n mï¿½i tr??ng, m?c ??nh lï¿½ 12345
     driver-class-name: oracle.jdbc.OracleDriver
 
   jpa:
     database-platform: org.hibernate.dialect.OracleDialect
     hibernate:
-      ddl-auto: update  # Có th? ??i thành validate n?u không mu?n t? ??ng s?a DB
+      ddl-auto: update  # Cï¿½ th? ??i thï¿½nh validate n?u khï¿½ng mu?n t? ??ng s?a DB
     show-sql: true
     properties:
       hibernate:
-        format_sql: true  # Hi?n th? SQL rõ ràng h?n trong log
+        format_sql: true  # Hi?n th? SQL rï¿½ rï¿½ng h?n trong log
+jwt:
+  signerKey: "/r/a3kh+1BLgXBAEU6dERcsXrzHZgWnsOqcnmxYDTxEMSa/6piUNFaoDWbmcE92K"

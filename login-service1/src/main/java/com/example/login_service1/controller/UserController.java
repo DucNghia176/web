@@ -6,6 +6,7 @@ import com.example.login_service1.entity.User;
 import com.example.login_service1.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.regex.Matcher;
@@ -17,6 +18,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/create")
     public ResponseEntity<Object> createUser(@RequestBody UserRequest request) {
@@ -42,11 +46,12 @@ public class UserController {
             if (userService.isNameExist(request.getName())) {
                 return ResponseEntity.badRequest().body(new ErrorResponse("Name already exists", "The name is already in use"));
             }
+            String hashedPassword = passwordEncoder.encode(request.getPassword());
 
             // Chuyển từ request thành entity
             User user = User.builder()
                     .username(request.getUsername())
-                    .password(request.getPassword())
+                    .password(hashedPassword)
                     .name(request.getName())
                     .email(request.getEmail())
                     .roles(request.getRoles())
