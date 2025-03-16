@@ -1,7 +1,8 @@
-package com.example.login_oracle.dto.request;
+package com.example.login_service1.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Column;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,23 +14,23 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserRequest {
-    @JsonProperty("username")
+    @JsonProperty("USERNAME")
     String username;
 
-    @JsonProperty("password")
+    @JsonProperty("PASSWORD")
     String password;
 
-    @JsonProperty("name")
+    @JsonProperty("NAME")
     String name;
 
-    @JsonProperty("email")
+    @JsonProperty("EMAIL")
     String email;
 
-    @JsonProperty("dob")
+    @JsonProperty("DOB")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd") // Format ngày tháng
     LocalDate dob;
 
-    @JsonProperty("roles")
+    @JsonProperty("ROLES")
     String roles;
 }
 

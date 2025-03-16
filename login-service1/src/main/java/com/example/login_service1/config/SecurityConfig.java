@@ -1,4 +1,4 @@
-package com.example.login_oracle.config;
+package com.example.login_service1.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,9 +11,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // ✅ Cách đúng trong Spring Security 6.1+
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // ✅ Cho phép tất cả request không cần đăng nhập
+                        .anyRequest().permitAll() // Cho phép tất cả request không cần đăng nhập
                 );
         return http.build();
     }

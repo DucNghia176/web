@@ -9,7 +9,7 @@ spring:
     driver-class-name: oracle.jdbc.OracleDriver
 
   jpa:
-    database-platform: org.hibernate.dialect.Oracle12cDialect
+    database-platform: org.hibernate.dialect.OracleDialect
     hibernate:
       ddl-auto: update  # Có th? ??i thành validate n?u không mu?n t? ??ng s?a DB
     show-sql: true

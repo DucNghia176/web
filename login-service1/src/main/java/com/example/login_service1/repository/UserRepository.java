@@ -1,6 +1,7 @@
-package com.example.login_oracle.repository;
+package com.example.login_service1.repository;
 
-import com.example.login_oracle.entity.User;
+
+import com.example.login_service1.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,5 +10,4 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
-    boolean existsByUsername(String username);
 }

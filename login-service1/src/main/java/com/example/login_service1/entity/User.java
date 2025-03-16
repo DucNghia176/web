@@ -1,11 +1,10 @@
-package com.example.login_oracle.entity;
+package com.example.login_service1.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -19,12 +18,25 @@ import java.util.Set;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
-    @SequenceGenerator(name = "user_seq", sequenceName = "USER_SEQ", allocationSize = 1)
+    @SequenceGenerator(name = "user_seq", sequenceName = "user_seq", allocationSize = 1)
+    @Column(name = "ID")
     Long id;
+
+    @Column(name = "USERNAME")
     String username;
+
+    @Column(name = "PASSWORD")
     String password;
+
+    @Column(name = "NAME")
     String name;
+
+    @Column(name = "EMAIL")
     String email;
+
+    @Column(name = "DOB")
     LocalDate dob;
+
+    @Column(name = "ROLES")
     String roles;
 }

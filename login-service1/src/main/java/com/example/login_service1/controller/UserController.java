@@ -1,8 +1,8 @@
-package com.example.login_oracle.controller;
+package com.example.login_service1.controller;
 
-import com.example.login_oracle.dto.request.UserRequest;
-import com.example.login_oracle.entity.User;
-import com.example.login_oracle.service.UserService;
+import com.example.login_service1.dto.request.UserRequest;
+import com.example.login_service1.entity.User;
+import com.example.login_service1.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

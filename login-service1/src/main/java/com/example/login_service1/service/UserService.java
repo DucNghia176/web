@@ -1,7 +1,7 @@
-package com.example.login_oracle.service;
+package com.example.login_service1.service;
 
-import com.example.login_oracle.entity.User;
-import com.example.login_oracle.repository.UserRepository;
+import com.example.login_service1.entity.User;
+import com.example.login_service1.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
