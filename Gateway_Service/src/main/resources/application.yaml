@@ -1,5 +1,5 @@
 server:
-  port: 9091  # C?ng c?a API Gateway
+  port: 8085  # C?ng c?a API Gateway
 
 spring:
   application:
