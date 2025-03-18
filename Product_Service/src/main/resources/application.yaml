@@ -1,8 +1,8 @@
 server:
-  port: 8080
+  port: 8081
 spring:
   application:
-    name: USER-SERVICE
+    name: PRODUCT-SERVICE
   datasource:
     url: jdbc:oracle:thin:@192.168.55.2:1521/ORCL21PDB1
     username: MYUSER
@@ -26,9 +26,6 @@ eureka:
       defauldZone: http://localhost:8761/eureka/
   instance:
     hostname: localhost
-
-jwt:
-  signerKey: "/r/a3kh+1BLgXBAEU6dERcsXrzHZgWnsOqcnmxYDTxEMSa/6piUNFaoDWbmcE92K"
 logging:
   level:
     org.springframework.security: DEBUG

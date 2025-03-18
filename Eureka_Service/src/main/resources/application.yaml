@@ -1,0 +1,15 @@
+server:
+  port: 8761  # C?ng c?a Eureka Server
+
+spring:
+  application:
+    name: EUREKA-SERVER
+
+eureka:
+  instance:
+    hostname: 192.168.55.2
+  client:
+    register-with-eureka: false  # Không t? ??ng ký chính nó vào
+    fetch-registry: false         # Không c?n l?y danh sách service
+  server:
+    wait-time-in-ms-when-sync-empty: 5  # Gi?m th?i gian ch? khi kh?i ??ng
