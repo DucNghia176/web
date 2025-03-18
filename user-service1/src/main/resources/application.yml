@@ -17,3 +17,7 @@ spring:
         format_sql: true  # Hi?n th? SQL r� r�ng h?n trong log
 jwt:
   signerKey: "/r/a3kh+1BLgXBAEU6dERcsXrzHZgWnsOqcnmxYDTxEMSa/6piUNFaoDWbmcE92K"
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
