@@ -14,6 +14,7 @@ import com.nimbusds.jwt.SignedJWT;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,16 +23,17 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthService {
-    UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
+    UserRepository userRepository;
+    private final Set<String> revokedTokens = new HashSet<>();
     @Value("${jwt.signerKey}")
     private String SIGNER_KEY =
             "/r/a3kh+1BLgXBAEU6dERcsXrzHZgWnsOqcnmxYDTxEMSa/6piUNFaoDWbmcE92K";
@@ -68,6 +70,9 @@ public class AuthService {
 
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         String token = request.getToken();
+        if (revokedTokens.contains(token)) {
+            return IntrospectResponse.builder().valid(false).build(); // Token đã bị thu hồi
+        }
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
         SignedJWT signedJWT = SignedJWT.parse(token);
         Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
@@ -83,7 +88,6 @@ public class AuthService {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Đăng nhập thất bại: Mật khẩu không đúng");
         }
@@ -100,6 +104,13 @@ public class AuthService {
     }
 
     public void logout(String token) {
-        // Xử lý logout nếu cần
+        if (token != null && !token.isEmpty()) {
+            revokedTokens.add(token);
+        }
     }
+
+    public boolean isTokenRevoked(String token) {
+        return revokedTokens.contains(token);
+    }
+
 }

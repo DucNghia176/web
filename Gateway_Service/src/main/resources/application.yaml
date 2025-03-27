@@ -9,12 +9,12 @@ spring:
     gateway:
       discovery:
         locator:
-          enabled: true  # Kích ho?t ??nh tuy?n ??ng v?i Eureka
+          enabled: true  # Kï¿½ch ho?t ??nh tuy?n ??ng v?i Eureka
       routes:
         - id: USER-SERVICE
           uri: lb://USER-SERVICE
           predicates:
-            - Path=/auth/**
+            - Path=/users/**, /auth/**
 
         - id: PRODUCT-SERVICE
           uri: lb://PRODUCT-SERVICE

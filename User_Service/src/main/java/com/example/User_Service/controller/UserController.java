@@ -45,8 +45,8 @@ public class UserController {
                 return ResponseEntity.badRequest().body(new ErrorResponse("Email already exists", "The email address is already in use"));
             }
 
-            // Kiểm tra tên đã tồn tại chưa
-            if (userService.isNameExist(request.getName())) {
+            // Kiểm tra username đã tồn tại chưa
+            if (userService.isNameExist(request.getUsername())) {
                 return ResponseEntity.badRequest().body(new ErrorResponse("Name already exists", "The name is already in use"));
             }
             String hashedPassword = passwordEncoder.encode(request.getPassword());
