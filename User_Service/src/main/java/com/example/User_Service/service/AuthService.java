@@ -2,7 +2,9 @@ package com.example.User_Service.service;
 
 import com.example.User_Service.dto.request.AuthRequest;
 import com.example.User_Service.dto.request.IntrospectRequest;
+import com.example.User_Service.dto.request.ResetPasswordRequest;
 import com.example.User_Service.dto.response.AuthResponse;
+import com.example.User_Service.dto.response.ErrorResponse;
 import com.example.User_Service.dto.response.IntrospectResponse;
 import com.example.User_Service.entity.User;
 import com.example.User_Service.repository.UserRepository;
@@ -24,16 +26,22 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthService {
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    PasswordEncoder passwordEncoder;
+    UserService userService;
+    EmailService emailService;
 
     UserRepository userRepository;
-    private final Set<String> revokedTokens = new HashSet<>();
+    Set<String> revokedTokens = new HashSet<>();
+    Map<String, String> otpStorage = new HashMap<>();
+    Map<String, Long> otpExpiry = new ConcurrentHashMap<>();
+    static long OTP_EXPIRY_TIME = 5 * 60 * 1000;
     @Value("${jwt.signerKey}")
     private String SIGNER_KEY =
             "/r/a3kh+1BLgXBAEU6dERcsXrzHZgWnsOqcnmxYDTxEMSa/6piUNFaoDWbmcE92K";
@@ -108,9 +116,50 @@ public class AuthService {
             revokedTokens.add(token);
         }
     }
-
     public boolean isTokenRevoked(String token) {
         return revokedTokens.contains(token);
     }
 
+    // ✅ Quên mật khẩu -> Gửi OTP
+    public Object forgotPassword(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isEmpty()) {
+            return new ErrorResponse("Email not found", "No user found with this email");
+        }
+
+        // Tạo & gửi OTP
+        String otpCode = emailService.generateVerificationCode();
+        otpStorage.put(email, otpCode);
+        otpExpiry.put(email, System.currentTimeMillis() + OTP_EXPIRY_TIME);
+        emailService.sendEmail(email, "Reset Password Code", "Your OTP Code: " + otpCode);
+
+        return "OTP code sent to your email.";
+    }
+
+    // ✅ Đặt lại mật khẩu sau khi nhập OTP
+    public Object resetPassword(ResetPasswordRequest request) {
+        String email = request.getEmail();
+        String storedOtp = otpStorage.get(email);
+        Long expiryTime = otpExpiry.get(email);
+
+        if (storedOtp == null || !storedOtp.equals(request.getOtp()) || expiryTime == null || System.currentTimeMillis() > expiryTime) {
+            return new ErrorResponse("Invalid OTP", "The OTP code is incorrect or expired");
+        }
+
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isEmpty()) {
+            return new ErrorResponse("Email not found", "No user found with this email");
+        }
+
+        // Cập nhật mật khẩu mới
+        User user = optionalUser.get();
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        // Xóa OTP sau khi sử dụng
+        otpStorage.remove(email);
+        otpExpiry.remove(email);
+
+        return "Password has been reset successfully.";
+    }
 }

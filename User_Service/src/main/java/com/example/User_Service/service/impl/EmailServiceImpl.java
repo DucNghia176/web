@@ -6,6 +6,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.util.Random;
+
 @Service
 public class EmailServiceImpl implements EmailService {
 
@@ -26,6 +28,13 @@ public class EmailServiceImpl implements EmailService {
             System.err.println("Failed to send email to " + to);
             e.printStackTrace(); // In lỗi ra console để dễ dàng kiểm tra
         }
+    }
+
+    @Override
+    public String generateVerificationCode() {
+        Random random = new Random();
+        int code = 100000 + random.nextInt(900000); // Tạo số 6 chữ số
+        return String.valueOf(code);
     }
 
 }
