@@ -6,19 +6,14 @@ import com.example.User_Service.dto.request.ResetPasswordRequest;
 import com.example.User_Service.dto.response.AuthResponse;
 import com.example.User_Service.dto.response.ErrorResponse;
 import com.example.User_Service.dto.response.IntrospectResponse;
-import com.example.User_Service.entity.User;
 import com.example.User_Service.service.AuthService;
-import com.example.User_Service.service.EmailService;
-import com.example.User_Service.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/auth")
@@ -31,12 +26,7 @@ public class AuthController {
     // ✅ Đăng nhập
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> authenticate(@RequestBody AuthRequest request) {
-        try {
-            return ResponseEntity.ok(authService.authenticate(request));
-        } catch (Exception e) {
-            log.error("Login failed for user: {}", request.getUsername(), e);
-            return ResponseEntity.status(401).body(AuthResponse.builder().authenticated(false).build());
-        }
+        return authService.authenticate(request);
     }
 
     // ✅ Kiểm tra token
@@ -50,29 +40,20 @@ public class AuthController {
         }
     }
 
-    // ✅ Đăng xuất
+    // Đăng xuất
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestBody IntrospectRequest request) {
-        String token = request.getToken();
-        if (authService.isTokenRevoked(token)) {
-            return ResponseEntity.badRequest().body("Bạn đã đăng xuất trước đó.");
-        }
-        authService.logout(token);
-        return ResponseEntity.ok("Đăng xuất thành công.");
+        return authService.logout(request.getToken());
     }
 
-    // ✅ Quên mật khẩu -> Gửi OTP
+    // Quên mật khẩu -> Gửi OTP
     @PostMapping("/forgot-password")
     public ResponseEntity<Object> forgotPassword(@RequestBody Map<String, String> request) {
         String email = request.getOrDefault("email", request.get("EMAIL"));
-        if (email == null || email.isEmpty()) {
-            return ResponseEntity.badRequest().body(new ErrorResponse("Invalid email", "Email is required"));
-        }
-        Object response = authService.forgotPassword(email);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(authService.forgotPassword(email));
     }
 
-    // ✅ Đặt lại mật khẩu sau khi nhập OTP
+    // Đặt lại mật khẩu sau khi nhập OTP
     @PostMapping("/reset-password")
     public ResponseEntity<Object> resetPassword(@RequestBody ResetPasswordRequest request) {
         Object response = authService.resetPassword(request);

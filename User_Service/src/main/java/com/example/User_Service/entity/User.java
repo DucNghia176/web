@@ -39,4 +39,6 @@ public class User {
 
     @Column(name = "ROLES")
     String roles;
+
+    private boolean locked;
 }
